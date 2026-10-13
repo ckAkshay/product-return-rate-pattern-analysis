@@ -166,6 +166,30 @@ Run the automated test suite:
 python -m pytest -v tests/test_backend.py
 ```
 
+## Step 7 — Next.js Analytics Dashboard
+
+The dedicated frontend dashboard is built with **Next.js 16 (App Router)**, **TypeScript**, **Tailwind CSS**, and **Recharts**.
+
+1. Navigate to the `frontend/` directory:
+   ```powershell
+   cd frontend
+   npm install
+   ```
+
+2. Start the development server (runs on port 3000):
+   ```powershell
+   npm run dev
+   ```
+
+3. Or build and run the production server:
+   ```powershell
+   npm run build
+   npx next start -p 3000
+   ```
+
+- **Dashboard URL:** http://localhost:3000
+- Connects automatically to the backend at `http://localhost:8000`.
+
 ## Tearing down
 
 ```powershell

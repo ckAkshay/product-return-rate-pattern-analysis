@@ -4,3 +4,7 @@ data/output/
 __pycache__/
 *.pyc
 .claude/
+node_modules/
+.next/
+frontend/node_modules/
+frontend/.next/
