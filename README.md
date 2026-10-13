@@ -145,6 +145,51 @@ docker compose exec app python analysis/return_rate_analysis.py
   return rate greater than 10%.
 - Writes the full detail table to `data/output/return_rate_report.csv`.
 
+## Step 6 — Backend API & Dashboard
+
+Start the FastAPI backend service:
+
+```powershell
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+- **Interactive Dashboard:** http://localhost:8000
+- **Swagger REST API Docs:** http://localhost:8000/docs
+- **Health check:** http://localhost:8000/api/health
+- **Summary metrics:** http://localhost:8000/api/summary
+- **Category returns:** http://localhost:8000/api/returns
+- **Threshold alerts (>10%):** http://localhost:8000/api/alerts
+
+Run the automated test suite:
+
+```powershell
+python -m pytest -v tests/test_backend.py
+```
+
+## Step 7 — Next.js Analytics Dashboard
+
+The dedicated frontend dashboard is built with **Next.js 16 (App Router)**, **TypeScript**, **Tailwind CSS**, and **Recharts**.
+
+1. Navigate to the `frontend/` directory:
+   ```powershell
+   cd frontend
+   npm install
+   ```
+
+2. Start the development server (runs on port 3000):
+   ```powershell
+   npm run dev
+   ```
+
+3. Or build and run the production server:
+   ```powershell
+   npm run build
+   npx next start -p 3000
+   ```
+
+- **Dashboard URL:** http://localhost:3000
+- Connects automatically to the backend at `http://localhost:8000`.
+
 ## Tearing down
 
 ```powershell

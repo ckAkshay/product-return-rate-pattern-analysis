@@ -52,6 +52,10 @@ def main():
     df["transaction_date"] = pd.to_datetime(df["transaction_date"])
     df["transaction_week"] = df["transaction_date"].dt.strftime("%G-W%V")
 
+    # Drop any duplicate order IDs and ensure positive quantities
+    df = df.drop_duplicates(subset=["order_id"])
+    df = df[df["quantity"] > 0]
+
     df.to_csv(CLEAN_PATH, index=False)
 
     print("\n" + "=" * 60)
