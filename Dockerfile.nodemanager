@@ -3,7 +3,14 @@ FROM bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
 # The YARN NodeManager is where mapper.py/reducer.py actually execute
 # (shipped there via Hadoop Streaming's -files distributed cache), so it
 # needs a python3 interpreter even though the base Hadoop image doesn't
-# ship one.
-RUN apt-get update && \
+# ship one. The base image is Debian stretch, which is EOL and gone from
+# the default mirrors, so point apt at the archive instead.
+RUN sed -i \
+      -e 's|deb.debian.org|archive.debian.org|g' \
+      -e 's|security.debian.org|archive.debian.org|g' \
+      -e '/stretch-updates/d' \
+      /etc/apt/sources.list && \
+    echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid && \
+    apt-get update && \
     apt-get install -y --no-install-recommends python3 && \
     rm -rf /var/lib/apt/lists/*

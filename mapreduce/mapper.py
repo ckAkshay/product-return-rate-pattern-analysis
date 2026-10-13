@@ -31,7 +31,7 @@ def main():
         quantity = event.get("quantity") or 0
         returned = 1 if str(event.get("return_status", "No")) == "Yes" else 0
 
-        print(f"{category}|{week}\t{quantity}\t{returned}")
+        print("{0}|{1}\t{2}\t{3}".format(category, week, quantity, returned))
 
 
 if __name__ == "__main__":

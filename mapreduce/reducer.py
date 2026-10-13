@@ -15,7 +15,7 @@ import sys
 
 
 def emit(key, total_sold, total_returned):
-    print(f"{key}\t{total_sold}\t{total_returned}")
+    print("{0}\t{1}\t{2}".format(key, total_sold, total_returned))
 
 
 def main():

@@ -10,7 +10,7 @@ set -euo pipefail
 
 INPUT=/data/transactions/transactions_stream.jsonl
 OUTPUT=/data/output/return_rate_mr
-STREAMING_JAR=$(find "$HADOOP_HOME" -name 'hadoop-streaming*.jar' | head -n 1)
+STREAMING_JAR=$(find "$HADOOP_HOME" -name 'hadoop-streaming-*.jar' ! -name '*sources*' ! -name '*test*' | head -n 1)
 
 if [ -z "$STREAMING_JAR" ]; then
   echo "Could not locate hadoop-streaming jar under \$HADOOP_HOME ($HADOOP_HOME)" >&2
