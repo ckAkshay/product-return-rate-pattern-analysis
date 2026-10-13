@@ -145,6 +145,27 @@ docker compose exec app python analysis/return_rate_analysis.py
   return rate greater than 10%.
 - Writes the full detail table to `data/output/return_rate_report.csv`.
 
+## Step 6 — Backend API & Dashboard
+
+Start the FastAPI backend service:
+
+```powershell
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+- **Interactive Dashboard:** http://localhost:8000
+- **Swagger REST API Docs:** http://localhost:8000/docs
+- **Health check:** http://localhost:8000/api/health
+- **Summary metrics:** http://localhost:8000/api/summary
+- **Category returns:** http://localhost:8000/api/returns
+- **Threshold alerts (>10%):** http://localhost:8000/api/alerts
+
+Run the automated test suite:
+
+```powershell
+python -m pytest -v tests/test_backend.py
+```
+
 ## Tearing down
 
 ```powershell

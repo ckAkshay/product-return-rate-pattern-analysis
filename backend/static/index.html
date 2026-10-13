@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Product Return-Rate Pattern Analysis - Big Data Analytics pipeline dashboard displaying return rate trends and high-return alerts.">
+  <title>Product Return-Rate Pattern Analysis Dashboard</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="header-inner">
+        <div class="brand-wrapper">
+          <div class="logo-badge">📊</div>
+          <div class="title-area">
+            <h1>Product Return-Rate Pattern Analysis</h1>
+            <p>Big Data Pipeline Monitoring (Kafka · HDFS · MapReduce · FastAPI)</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <div id="status-indicator" class="status-pill">
+            <span class="status-dot"></span>
+            <span id="status-text">Checking Status...</span>
+          </div>
+          <button id="btn-refresh" class="btn-refresh" title="Refresh Dashboard Data">
+            <span class="refresh-icon">🔄</span> Refresh
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Top Alert Notification Banner -->
+    <div id="alert-banner" class="alert-banner" style="display: none;">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-content">
+        <h3>High Return Rates Exceeding 10% Detected</h3>
+        <p id="alert-details">Analyzing anomalous category-week combinations...</p>
+      </div>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="kpi-grid">
+      <div class="card" id="card-sold">
+        <div class="card-label">Total Units Sold</div>
+        <div id="kpi-sold" class="card-value">-</div>
+        <div id="kpi-sold-sub" class="card-subtext">Across all categories</div>
+      </div>
+
+      <div class="card" id="card-returned">
+        <div class="card-label">Total Units Returned</div>
+        <div id="kpi-returned" class="card-value">-</div>
+        <div id="kpi-returned-sub" class="card-subtext">Verified returns</div>
+      </div>
+
+      <div class="card highlight-rate" id="card-rate">
+        <div class="card-label">Overall Return Rate</div>
+        <div id="kpi-rate" class="card-value">-</div>
+        <div class="card-subtext">Target Threshold: &le; 10.0%</div>
+      </div>
+
+      <div class="card highlight-alerts" id="card-alerts">
+        <div class="card-label">Active Return Alerts</div>
+        <div id="kpi-alerts" class="card-value">-</div>
+        <div id="kpi-alerts-sub" class="card-subtext">Spikes &gt; 10% threshold</div>
+      </div>
+    </div>
+
+    <!-- Category Overview Bar Charts -->
+    <div class="section-header">
+      <h2 class="section-title">Category-Level Return Rate Comparison</h2>
+    </div>
+    <div id="category-bars" class="category-bars-grid">
+      <!-- Injected via dashboard.js -->
+    </div>
+
+    <!-- Weekly Returns Data Explorer -->
+    <div class="section-header">
+      <h2 class="section-title">Weekly Returns Explorer</h2>
+    </div>
+
+    <!-- Filter Controls -->
+    <div class="controls-card">
+      <div class="filter-group">
+        <label for="filter-category">Product Category</label>
+        <select id="filter-category" class="filter-select">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-week">Reporting Week</label>
+        <select id="filter-week" class="filter-select">
+          <option value="">All Weeks</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-status">Threshold Status</label>
+        <select id="filter-status" class="filter-select">
+          <option value="">All Statuses</option>
+          <option value="HIGH RETURNS">HIGH RETURNS (>10%)</option>
+          <option value="NORMAL">NORMAL (&le;10%)</option>
+        </select>
+      </div>
+
+      <button id="btn-reset" class="btn-reset">Reset Filters</button>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-card">
+      <div class="table-responsive">
+        <table id="returns-table">
+          <thead>
+            <tr>
+              <th>Week</th>
+              <th>Category</th>
+              <th>Total Sold</th>
+              <th>Total Returned</th>
+              <th>Return Rate (%)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="returns-tbody">
+            <!-- Injected via dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty / Loading State Container -->
+      <div id="table-state" class="state-box" style="display: none;"></div>
+
+      <!-- Pagination -->
+      <div class="pagination-bar">
+        <span id="page-info">Loading records...</span>
+        <div class="page-buttons">
+          <button id="btn-prev" class="btn-page" disabled>&larr; Previous</button>
+          <button id="btn-next" class="btn-page" disabled>Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
