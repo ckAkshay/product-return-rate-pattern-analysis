@@ -12,6 +12,7 @@ interface ReturnsTableProps {
   currentPage: number;
   pageSize: number;
   onPageChange: (newPage: number) => void;
+  onOpenAddModal?: () => void;
 }
 
 export function CategoryReturnsTable({
@@ -21,23 +22,108 @@ export function CategoryReturnsTable({
   currentPage,
   pageSize,
   onPageChange,
+  onOpenAddModal,
 }: ReturnsTableProps) {
+  const [searchTerm, setSearchTerm] = React.useState<string>("");
   const totalPages = Math.max(1, Math.ceil(totalRecords / pageSize));
+
+  // Client-side search filtering if applied
+  const filteredRecords = React.useMemo(() => {
+    if (!searchTerm.trim()) return records;
+    const term = searchTerm.toLowerCase();
+    return records.filter(
+      (r) =>
+        r.category.toLowerCase().includes(term) ||
+        r.week.toLowerCase().includes(term) ||
+        r.status.toLowerCase().includes(term)
+    );
+  }, [records, searchTerm]);
+
+  // Export current records to CSV
+  const handleExportCSV = () => {
+    if (records.length === 0) return;
+    const headers = ["Week", "Category", "Units Sold", "Units Returned", "Return Rate (%)", "Status"];
+    const rows = filteredRecords.map((r) => [
+      r.week,
+      `"${r.category}"`,
+      r.total_sold,
+      r.total_returned,
+      r.return_rate,
+      `"${r.status}"`,
+    ]);
+
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `return_rates_report_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="rounded-2xl border border-white/10 bg-slate-900/60 backdrop-blur-xl shadow-xl overflow-hidden mb-8">
-      <div className="p-5 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="p-5 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h3 className="text-base font-bold text-white">
-            Category-Wise Weekly Results
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-bold text-white">
+              Category-Wise Weekly Results
+            </h3>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              Interactive Table
+            </span>
+          </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Full audit log of MapReduce aggregated return metrics
+            Full audit log of MapReduce aggregated return metrics & live simulated batches
           </p>
         </div>
 
-        <div className="text-xs text-slate-400">
-          Showing <strong>{records.length}</strong> of <strong>{totalRecords}</strong> records
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Quick Search */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search category/week..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="px-3 py-1.5 pl-8 rounded-xl bg-slate-950/70 border border-white/15 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-44 sm:w-52 transition-all"
+            />
+            <span className="absolute left-2.5 top-2 text-slate-500 text-xs">🔍</span>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-2.5 top-1.5 text-slate-400 hover:text-white text-xs"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Export CSV Button */}
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/15 text-xs font-semibold text-slate-300 hover:text-white transition-all"
+            title="Download records as CSV"
+          >
+            <span>📥</span>
+            <span>Export CSV</span>
+          </button>
+
+          {/* Add Record Button */}
+          {onOpenAddModal && (
+            <button
+              onClick={onOpenAddModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 active:scale-95 text-xs font-bold text-white shadow-md shadow-indigo-600/30 transition-all"
+            >
+              <span>+</span>
+              <span>Add Record</span>
+            </button>
+          )}
+
+          <div className="text-xs text-slate-400 hidden lg:block ml-2 border-l border-white/10 pl-3">
+            Showing <strong>{filteredRecords.length}</strong> of <strong>{totalRecords}</strong>
+          </div>
         </div>
       </div>
 
@@ -65,20 +151,20 @@ export function CategoryReturnsTable({
                   <td className="py-4 px-5"><div className="h-4 w-20 bg-white/10 rounded" /></td>
                 </tr>
               ))
-            ) : records.length === 0 ? (
+            ) : filteredRecords.length === 0 ? (
               <tr>
                 <td colSpan={6} className="py-16 text-center text-slate-400">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <Inbox className="h-8 w-8 text-slate-600" />
                     <p className="font-semibold text-slate-300">No records found</p>
                     <p className="text-xs text-slate-500">
-                      Try adjusting or resetting your filter criteria.
+                      Try adjusting your search or resetting your filter criteria.
                     </p>
                   </div>
                 </td>
               </tr>
             ) : (
-              records.map((r, idx) => {
+              filteredRecords.map((r, idx) => {
                 const statusInfo = getStatusStyle(r.status);
                 const rateNum = r.return_rate ?? 0;
                 const progressWidth = Math.min(100, (rateNum / 35) * 100);
